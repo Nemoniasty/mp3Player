@@ -6,6 +6,7 @@
 #define SCREEN_HEIGHT 64
 const int buttonPinUp = 2;
 const int buttonPinDown = 3;
+const int buttonPinEnter = 4;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
@@ -41,6 +42,7 @@ const long interval = 200;
 // Button debounce
 bool lastUpState = HIGH;
 bool lastDownState = HIGH;
+bool lastEnterState = HIGH;
 unsigned long lastButtonTime = 0;
 const unsigned long debounceDelay = 150;
 
@@ -89,6 +91,7 @@ void setup() {
 
     pinMode(buttonPinUp, INPUT_PULLUP);
     pinMode(buttonPinDown, INPUT_PULLUP);
+    pinMode(buttonPinEnter, INPUT_PULLUP);
 
     Serial.begin(9600);
 }
@@ -97,6 +100,7 @@ void loop() {
     // --- Button handling ---
     bool upState = digitalRead(buttonPinUp);
     bool downState = digitalRead(buttonPinDown);
+    bool EnterState = digitalRead(buttonPinEnter);
     unsigned long now = millis();
 
     if (upState == LOW && lastUpState == HIGH && now - lastButtonTime > debounceDelay) {
@@ -108,6 +112,11 @@ void loop() {
     if (downState == LOW && lastDownState == HIGH && now - lastButtonTime > debounceDelay) {
         selected++;
         if (selected >= songCount) selected = 0;
+        lastButtonTime = now;
+    }
+
+    if (EnterState == LOW && lastEnterState == HIGH && now - lastButtonTime > debounceDelay) {
+        playing=selected;
         lastButtonTime = now;
     }
 
